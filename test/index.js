@@ -1,4 +1,7 @@
 const {writeFile, unlink} = require('fs');
+const {spawnSync} = require('child_process');
+
+const include = /\s--includei?\s/.test(spawnSync('inotifywait', ['-h']).output[1]);
 
 const INotifyWait = require('../cjs');
 
@@ -54,13 +57,15 @@ args.splice(0);
 new INotifyWait('.', {exclude: /test/i}).stop();
 assert(args.join(',') === '-m,--excludei,test', 'excludei');
 
-args.splice(0);
-new INotifyWait('.', {include: /test/}).stop();
-assert(args.join(',') === '-m,--include,test', 'include');
+if (include) {
+  args.splice(0);
+  new INotifyWait('.', {include: /test/}).stop();
+  assert(args.join(',') === '-m,--include,test', 'include');
 
-args.splice(0);
-new INotifyWait('.', {include: /test/i}).stop();
-assert(args.join(',') === '-m,--includei,test', 'includei');
+  args.splice(0);
+  new INotifyWait('.', {include: /test/i}).stop();
+  assert(args.join(',') === '-m,--includei,test', 'includei');
+}
 
 args.splice(0);
 new INotifyWait('.', {events: INotifyWait.IN_ACCESS}).stop();

@@ -79,14 +79,18 @@ const clean = self => {
 // exported class INotifyWait
 module.exports = Object.assign(
   class INotifyWait extends EventEmitter {
-    constructor(path, options = {
-      exclude: null,    // a RegExp to exclude files
-      include: null,    // a RegExp to include files
-      persistent: true, // keep watching until stop
-      recursive: false, // recursive within folders
-      events: 0         // one or more events to listen for
-                        // if omitted, all events are listened
-    }) {
+    constructor(
+      path,               // a *single* string path representing
+                          // either a file or a folder
+      options = {
+        exclude: null,    // a RegExp to exclude files (passed as shell argument)
+        include: null,    // a RegExp to include files (passed as shell argument)
+        persistent: true, // keep watching until .stop()
+        recursive: false, // recursive within folders
+        events: 0         // one or more events to listen for
+                          // if omitted, all events are listened
+      }
+    ) {
       super();
       const {exclude, include} = options;
       const persistent = getDefault(options, 'persistent', true);
@@ -194,8 +198,10 @@ module.exports = Object.assign(
       wm.set(this, inotifywait);
     }
     stop() {
-      if (wm.has(this))
+      if (wm.has(this)) {
+        this.removeAllListeners();
         clean(this).kill();
+      }
     }
   },
   EVENTS

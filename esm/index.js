@@ -82,8 +82,8 @@ export default Object.assign(
       path,               // a *single* string path representing
                           // either a file or a folder
       options = {
-        exclude: null,    // a RegExp to exclude files
-        include: null,    // a RegExp to include files
+        exclude: null,    // a RegExp to exclude files (passed as shell argument)
+        include: null,    // a RegExp to include files (passed as shell argument)
         persistent: true, // keep watching until .stop()
         recursive: false, // recursive within folders
         events: 0         // one or more events to listen for
