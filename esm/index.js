@@ -84,6 +84,7 @@ export default Object.assign(
       options = {
         exclude: null,    // a RegExp to exclude files (passed as shell argument)
         include: null,    // a RegExp to include files (passed as shell argument)
+                          // Please note `include` option requires inotifywait 3.20+
         persistent: true, // keep watching until .stop()
         recursive: false, // recursive within folders
         events: 0         // one or more events to listen for

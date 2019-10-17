@@ -1,5 +1,7 @@
 # inotifywait-spawn
 
+[![Build Status](https://travis-ci.com/WebReflection/inotifywait-spawn.svg?branch=master)](https://travis-ci.com/WebReflection/inotifywait-spawn) [![Coverage Status](https://coveralls.io/repos/github/WebReflection/inotifywait-spawn/badge.svg?branch=master)](https://coveralls.io/github/WebReflection/inotifywait-spawn?branch=master)
+
 A zero dependencies, 100% code covered, [inotifywait](https://linux.die.net/man/1/inotifywait) wrap based on [inotify-tools](https://github.com/rvoicilas/inotify-tools/wiki) and [spawn](https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options).
 
 
@@ -16,6 +18,7 @@ class INotifyWait extends EventEmitter {
     options = {
       exclude: null,    // a RegExp to exclude files (passed as shell argument)
       include: null,    // a RegExp to include files (passed as shell argument)
+                        // Please note `include` option requires inotifywait 3.20+
       persistent: true, // keep watching until .stop()
       recursive: false, // recursive within folders
       events: 0         // one or more events to listen for
@@ -96,6 +99,7 @@ Tested on ArchLinux from NodeJS 12+ to NodeJS version 6, this should work with e
 
 ### Caveats & F.A.Q.
 
+  * if this project does not show 100% code coverage is because Traavis CI runs on Debian/Ubuntu and older `inotifywait` version that does not have the `include` option.
   * if you name your file like one of the events (without the `IN_` prefix), then the `stdout` based logic might easily fail ... just don't!
   * if you create dozen instances, you're better off with a single instance that watch a folder recursively, as you might know already `spawn` has a cost.
   * apparently `inotifywait` has bad reputation when watching folders recursively, be sure you know all the caveats and behave accordingly.

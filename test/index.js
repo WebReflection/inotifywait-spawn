@@ -57,6 +57,7 @@ args.splice(0);
 new INotifyWait('.', {exclude: /test/i}).stop();
 assert(args.join(',') === '-m,--excludei,test', 'excludei');
 
+/* istanbul ignore if */
 if (include) {
   args.splice(0);
   new INotifyWait('.', {include: /test/}).stop();
