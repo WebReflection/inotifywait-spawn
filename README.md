@@ -40,7 +40,7 @@ Please read [inotifywait man page](https://linux.die.net/man/1/inotifywait) to k
 
 Because every other project has either problems compiling code in this or that version of NodeJS, or it's been unmaintained for months or years, with growing amount of bugs.
 
-This project wants to keep it both simple and portable, relying on system [inotifywait](https://linux.die.net/man/1/inotifywait), avoiding any present or future issues with native compiled code, making it easy to bring and work with on ARM and other IoT devices too.
+This project wants to keep it both simple and portable, relying on system [inotifywait](https://linux.die.net/man/1/inotifywait), avoiding any present or future issue with native/compiled code, making it easy to bring and work with on ARM and other IoT devices too.
 
 Where there is NodeJS, and there is `inotifywait`, this project might be all you need.
 
@@ -94,7 +94,9 @@ These events are better described in the [inotify documentation](http://man7.org
 
 
 ### Compatibility
-Tested on ArchLinux from NodeJS 6 to latest, this should work with every other Linux distribution that offers `inotify-tools` and `inotifywait` with it.
+Fully tested on ArchLinux from NodeJS 6 to latest, this should work with every other Linux distribution that offers `inotify-tools` and `inotifywait` with it.
+
+Please note that **some options might not be available** with older versions of `inotifywait`, like it is for `include` in current Ubuntu and `inotifywait` version < 3.20.
 
 
 ### Caveats & F.A.Q.
