@@ -170,12 +170,12 @@ process.on('uncaughtException', function uncaughtException(err) {
             });
             setTimeout(() => {
               writeFile('test/recursive.txt', '', Object);
-            }, 250);
+            }, 500);
           });
         });
         setTimeout(() => {
           writeFile('another file.txt', 'some data', Object);
-        }, 250);
+        }, 500);
       });
     });
   });
