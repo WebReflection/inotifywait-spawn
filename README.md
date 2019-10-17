@@ -94,7 +94,7 @@ These events are better described in the [inotify documentation](http://man7.org
 
 
 ### Compatibility
-Tested on ArchLinux from NodeJS 12+ to NodeJS version 6, this should work with every other Linux distribution that offers `inotify-tools` and `inotifywait` with it.
+Tested on ArchLinux from NodeJS 6 to latest, this should work with every other Linux distribution that offers `inotify-tools` and `inotifywait` with it.
 
 
 ### Caveats & F.A.Q.
