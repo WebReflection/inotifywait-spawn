@@ -147,27 +147,27 @@ setTimeout(cleanUP, DELAY, () => {
     process.removeListener('uncaughtException', uncaughtException);
     writeFile('test.txt', '', () => {
       execSync('sync');
-      inw = new INotifyWait('test.txt', {events: INotifyWait.IN_CLOSE_WRITE});
-      inw.on(INotifyWait.IN_CLOSE_WRITE, info => {
-        assert(INotifyWait.IN_CLOSE_WRITE === info, 'expected IN_CLOSE_WRITE');
+      inw = new INotifyWait(['test.txt', 'node_modules'], {events: INotifyWait.IN_CLOSE_WRITE});
+      inw.on(INotifyWait.IN_CLOSE_WRITE, ({type}) => {
+        assert(INotifyWait.IN_CLOSE_WRITE === type, 'expected IN_CLOSE_WRITE');
         inw.stop();
         unlink('test.txt', () => {
           let created = false;
           inw = new INotifyWait('.', {recursive: true, events: INotifyWait.IN_CREATE | INotifyWait.IN_MODIFY});
-          inw.on(INotifyWait.IN_CREATE, (info, details) => {
-            assert(INotifyWait.IN_CREATE === info, 'expected IN_CREATE');
-            assert(details === 'another file.txt', 'expected details IN_CREATE');
+          inw.on(INotifyWait.IN_CREATE, ({type, entry}) => {
+            assert(INotifyWait.IN_CREATE === type, 'expected IN_CREATE');
+            assert(entry === 'another file.txt', 'expected details IN_CREATE');
             created = true;
           });
-          inw.on(INotifyWait.IN_MODIFY, (info, details) => {
-            assert(INotifyWait.IN_MODIFY === info, 'expected folder IN_MODIFY');
-            assert(details === 'another file.txt', 'expected details IN_MODIFY');
+          inw.on(INotifyWait.IN_MODIFY, ({type, entry}) => {
+            assert(INotifyWait.IN_MODIFY === type, 'expected folder IN_MODIFY');
+            assert(entry === 'another file.txt', 'expected details IN_MODIFY');
             assert(created, 'file was previously created');
             unlink('another file.txt', () => {
               inw.removeAllListeners();
-              inw.on(INotifyWait.IN_CREATE, (info, details) => {
-                assert(INotifyWait.IN_CREATE === info, 'expected recursive IN_CREATE');
-                assert(details === 'test/recursive.txt', 'expected recursive details IN_CREATE');
+              inw.on(INotifyWait.IN_CREATE, ({type, entry}) => {
+                assert(INotifyWait.IN_CREATE === type, 'expected recursive IN_CREATE');
+                assert(entry === 'test/recursive.txt', 'expected recursive details IN_CREATE');
                 inw.stop();
                 console.log('');
                 unlink('test/recursive.txt', Object);

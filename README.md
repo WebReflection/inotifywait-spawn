@@ -13,8 +13,8 @@ A zero dependencies, 100% code covered, [inotifywait](https://linux.die.net/man/
 class INotifyWait extends EventEmitter {
 
   constructor(
-    path,               // a *single* string path representing
-                        // either a file or a folder
+    path,               // a single path, or a list of paths, each
+                        // representing either a file or a folder
     options = {
       exclude: null,    // a RegExp to exclude files (passed as shell argument)
       include: null,    // a RegExp to include files (passed as shell argument)
@@ -31,7 +31,7 @@ class INotifyWait extends EventEmitter {
 }
 ```
 
-For RegExp properties, use the `/*\.txt/i` flag to make it case insensitive.
+For `RegExp` properties, use the `/*\.txt/i` flag to make it case insensitive.
 
 Please read [inotifywait man page](https://linux.die.net/man/1/inotifywait) to know more about the underlying features offered by `include` and `exclude`.
 
@@ -54,17 +54,31 @@ const {IN_CLOSE_WRITE, IN_DELETE, IN_MODIFY} = INotifyWait;
 // single file
 const inw = new INotifyWait('test.txt', {events: IN_DELETE | IN_CLOSE_WRITE});
 inw.on('error', console.error);
-inw.on(IN_DELETE, type => console.log('file removed'));
-inw.on(IN_CLOSE_WRITE, type => console.log('file ready to be read'));
+inw.on(
+  IN_DELETE,
+  ({type, path}) => console.log(`${path} removed`)
+);
+inw.on(
+  IN_CLOSE_WRITE,
+  ({type, path}) => console.log(`${path} ready to be read`)
+);
 
 // folder
 const inw = new INotifyWait('.', {recursive: true, events: IN_MODIFY});
 inw.on('error', console.error);
-inw.on(IN_MODIFY, (type, subpath) => {
-  type === IN_MODIFY; // the event type is always passed
-  console.log(`${subpath} modified in ${inw.path}`);
-  // every INotifyWait instance will have a resolved inw.path property
-  // pointing at the watched file or folder
+inw.on(IN_MODIFY, ({type, path, entry}) => {
+  type === IN_MODIFY; // the event type is always available
+  console.log(`${entry} modified in ${path}`);
+});
+
+// multiple files/folders (still one spawned process only)
+const inw = new INotifyWait(
+  ['test', 'node_modules', 'build'],
+  {recursive: true, events: IN_MODIFY}
+);
+inw.on('error', console.error);
+inw.on(IN_MODIFY, ({type, path, entry}) => {
+  console.log(`${entry} modified in ${path}`);
 });
 ```
 
