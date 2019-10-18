@@ -148,9 +148,7 @@ export default Object.assign(
           args.push('-e', 'move');
       }
 
-      const paths = [].concat(path)
-                      .map(path => resolve(path))
-                      .sort((a, b) => b.length - a.length);
+      const paths = [].concat(path).map(path => resolve(path));
       this.paths = paths;
 
       const inotifywait = spawn(
