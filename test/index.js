@@ -1,7 +1,7 @@
 const DELAY = 500;
 
 const {writeFile, unlink} = require('fs');
-const {spawnSync} = require('child_process');
+const {execSync, spawnSync} = require('child_process');
 
 const noInclude = !/\s--includei?\s/.test(spawnSync('inotifywait', ['-h']).output[1]);
 
@@ -9,19 +9,20 @@ const expectedError = err => console.error('expected error');
 
 const INotifyWait = require('../cjs');
 
+const cleanUP = cb => {
+  unlink('test.txt', () => {
+    unlink('another file.txt', () => {
+      unlink('test/recursive.txt', cb);
+    });
+  });
+};
+
 const assert = (condition, message) => {
   console.assert(condition, message);
   if (condition)
     console.log(` \x1B[32m✔\x1B[0m ${message}`);
-  else {
-    unlink('test.txt', () => {
-      unlink('another file.txt', () => {
-        unlink('test/recursive.txt', () => {
-          process.exit(1);
-        });
-      });
-    });
-  }
+  else
+    cleanUP(() => process.exit(1));
 };
 
 const args = [];
@@ -141,10 +142,11 @@ assert(args.join(',') === '-m,-e,close_write,-e,move', 'IN_CLOSE_WRITE | IN_MOVE
 args.splice(0);
 Array.prototype.push = push;
 
-process.on('uncaughtException', function uncaughtException(err) {
-  process.removeListener('uncaughtException', uncaughtException);
-  writeFile('test.txt', '', () => {
-    setTimeout(() => {
+setTimeout(cleanUP, DELAY, () => {
+  process.on('uncaughtException', function uncaughtException() {
+    process.removeListener('uncaughtException', uncaughtException);
+    writeFile('test.txt', '', () => {
+      execSync('sync');
       inw = new INotifyWait('test.txt', {events: INotifyWait.IN_CLOSE_WRITE});
       inw.on(INotifyWait.IN_CLOSE_WRITE, info => {
         assert(INotifyWait.IN_CLOSE_WRITE === info, 'expected IN_CLOSE_WRITE');
@@ -181,9 +183,9 @@ process.on('uncaughtException', function uncaughtException(err) {
         });
       });
       writeFile('test.txt', 'some data', Object);
-    }, DELAY);
+    });
   });
+  
+  inw = new INotifyWait('test.txt', {events: INotifyWait.IN_CLOSE_WRITE});
+  inw.on('error', Object);
 });
-
-inw = new INotifyWait('test.txt', {events: INotifyWait.IN_CLOSE_WRITE});
-inw.on('error', Object);
