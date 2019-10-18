@@ -59,12 +59,7 @@ const EVENTS = {
 
 const wm = new WeakMap;
 
-const {slice} = '';
-
-const re = new RegExp(`\\b(?:${
-  Object.keys(EVENTS)
-    .map(key => key.slice(3)).join('|')
-})\\b`, 'g');
+const {replace} = '';
 
 const hOP = {}.hasOwnProperty;
 const getDefault = (options, key, value) =>
@@ -97,7 +92,7 @@ module.exports = Object.assign(
       const persistent = getDefault(options, 'persistent', true);
       const recursive = getDefault(options, 'recursive', false);
       const events = getDefault(options, 'events', 0);
-      const args = ['-q'];
+      const args = ['--format', '%e|%w%f', '-q'];
       if (persistent)
         args.push('-m');
       if (recursive)
@@ -168,25 +163,15 @@ module.exports = Object.assign(
 
       const pLength = path.length + 1;
       stdout.on('data', data => {
-        const events = [];
-        const details = slice.call(data, pLength).trim();
-        let prefix = '';
-        let match = null;
-        let i = 0;
-        while (match = re.exec(details)) {
-          const [event] = match;
-          const {index} = match;
-          if (i < 1 && i < index)
-            prefix = details.slice(0, index - 1);
-          i = index + event.length + 1;
-          events.push(event);
-        }
-        const extras = prefix + details.slice(i);
+        const output = replace.call(data, /[\r\n]+$/, '');
+        const i = output.indexOf('|');
+        const events = output.slice(0, i).split(',');
+        const extras = output.slice(1 + i + pLength);
         const hasExtras = 0 < extras.length;
         // DEBUG
         // console.log(events);
         // console.log(`"${extras}"`);
-        // console.log(`stdout: ${data}`);
+        // console.log(`stdout: ${output}`);
         for (let i = 0, {length} = events; i < length; i++) {
           const type = EVENTS[`IN_${events[i]}`];
           if (hasExtras)

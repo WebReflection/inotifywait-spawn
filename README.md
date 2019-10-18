@@ -101,6 +101,5 @@ Please note that **some options might not be available** with older versions of 
 
 ### Caveats & F.A.Q.
 
-  * if you name your file like one of the events (without the `IN_` prefix), then the `stdout` based logic might easily fail ... just don't!
   * if you create dozen instances, you're better off with a single instance that watch a folder recursively, as you might know already `spawn` has a cost.
   * apparently `inotifywait` has bad reputation when watching folders recursively, be sure you know all the caveats and behave accordingly.
