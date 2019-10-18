@@ -156,7 +156,7 @@ module.exports = Object.assign(
 
       const inotifywait = spawn(
         'inotifywait',
-        args.concat(this.paths),
+        args.concat(paths),
         {
           detached: true,
           stdio: ['ignore', 'pipe', 'pipe']
