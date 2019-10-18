@@ -97,9 +97,3 @@ These events are better described in the [inotify documentation](http://man7.org
 Fully tested on ArchLinux from NodeJS 6 to latest, this should work with every other Linux distribution that offers `inotify-tools` and `inotifywait` with it.
 
 Please note that **some options might not be available** with older versions of `inotifywait`, like it is for `include` in current Ubuntu and `inotifywait` version < 3.20.
-
-
-### Caveats & F.A.Q.
-
-  * if you create dozen instances, you're better off with a single instance that watch a folder recursively, as you might know already `spawn` has a cost.
-  * apparently `inotifywait` has bad reputation when watching folders recursively, be sure you know all the caveats and behave accordingly.

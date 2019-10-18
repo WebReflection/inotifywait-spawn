@@ -167,10 +167,6 @@ export default Object.assign(
         const events = output.slice(0, i).split(',');
         const extras = output.slice(1 + i + pLength);
         const hasExtras = 0 < extras.length;
-        // DEBUG
-        // console.log(events);
-        // console.log(`"${extras}"`);
-        // console.log(`stdout: ${output}`);
         for (let i = 0, {length} = events; i < length; i++) {
           const type = EVENTS[`IN_${events[i]}`];
           if (hasExtras)
