@@ -59,7 +59,7 @@ const EVENTS = {
 
 const wm = new WeakMap;
 
-const {replace} = '';
+const {split} = '';
 
 const hOP = {}.hasOwnProperty;
 const getDefault = (options, key, value) =>
@@ -163,17 +163,22 @@ module.exports = Object.assign(
 
       const pLength = path.length + 1;
       stdout.on('data', data => {
-        const output = replace.call(data, /[\r\n]+$/, '');
-        const i = output.indexOf('|');
-        const events = output.slice(0, i).split(',');
-        const extras = output.slice(1 + i + pLength);
-        const hasExtras = 0 < extras.length;
-        for (let i = 0, {length} = events; i < length; i++) {
-          const type = EVENTS[`IN_${events[i]}`];
-          if (hasExtras)
-            this.emit(type, type, extras);
-          else
-            this.emit(type, type);
+        const output = split.call(data, /[\r\n]+/);
+        for (let i = 0, {length} = output; i < length; i++) {
+          const line = output[i];
+          if (line !== '') {
+            const index = line.indexOf('|');
+            const events = line.slice(0, index).split(',');
+            const extras = line.slice(1 + index + pLength);
+            const hasExtras = 0 < extras.length;
+            for (let i = 0, {length} = events; i < length; i++) {
+              const type = EVENTS[`IN_${events[i]}`];
+              if (hasExtras)
+                this.emit(type, type, extras);
+              else
+                this.emit(type, type);
+            }
+          }
         }
       });
 
