@@ -1,6 +1,6 @@
 {
   "name": "inotifywait-spawn",
-  "version": "0.1.4",
+  "version": "1.0.0",
   "description": "A zero dependencies, 100% code covered, inotifywait wrap based on inotify-tools.",
   "main": "cjs/index.js",
   "scripts": {
