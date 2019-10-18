@@ -11,7 +11,7 @@ A zero dependencies, 100% code covered, [inotifywait](https://linux.die.net/man/
 
 ```js
 // listen to events via:
-// inw.on(INotifyWait.IN_CLOSE, (type, ...extras));
+// inw.on(INotifyWait.IN_CLOSE, ({type, path, entry}) => {});
 class INotifyWait extends EventEmitter {
 
   constructor(
