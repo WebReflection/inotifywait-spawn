@@ -54,7 +54,8 @@ const EVENTS = {
   IN_MOVE_SELF,
   IN_UNMOUNT,
   IN_CLOSE,
-  IN_MOVE
+  IN_MOVE,
+  byName: name => EVENTS[`IN_${name}`]
 };
 
 const wm = new WeakMap;
@@ -75,8 +76,8 @@ const clean = self => {
 module.exports = Object.assign(
   class INotifyWait extends EventEmitter {
     constructor(
-      path,               // a *single* string path representing
-                          // either a file or a folder
+      path,               // a single path, or a list of paths, each
+                          // representing either a file or a folder
       options = {
         exclude: null,    // a RegExp to exclude files (passed as shell argument)
         include: null,    // a RegExp to include files (passed as shell argument)
@@ -148,10 +149,14 @@ module.exports = Object.assign(
           args.push('-e', 'move');
       }
 
-      this.path = (path = resolve(path));
+      const paths = [].concat(path)
+                      .map(path => resolve(path))
+                      .sort((a, b) => b.length - a.length);
+      this.paths = paths;
+
       const inotifywait = spawn(
         'inotifywait',
-        args.concat(path),
+        args.concat(this.paths),
         {
           detached: true,
           stdio: ['ignore', 'pipe', 'pipe']
@@ -161,22 +166,24 @@ module.exports = Object.assign(
       const {stdout, stderr} = inotifywait;
       stderr.on('data', error.bind(this));
 
-      const pLength = path.length + 1;
       stdout.on('data', data => {
         const output = split.call(data, /[\r\n]+/);
         for (let i = 0, {length} = output; i < length; i++) {
           const line = output[i];
           if (line !== '') {
             const index = line.indexOf('|');
-            const events = line.slice(0, index).split(',');
-            const extras = line.slice(1 + index + pLength);
-            const hasExtras = 0 < extras.length;
-            for (let i = 0, {length} = events; i < length; i++) {
-              const type = EVENTS[`IN_${events[i]}`];
-              if (hasExtras)
-                this.emit(type, type, extras);
-              else
-                this.emit(type, type);
+            const events = line.slice(0, index).split(',').map(EVENTS.byName);
+            const fullPath = line.slice(1 + index);
+            for (let i = 0, {length} = paths; i < length; i++) {
+              const path = paths[i];
+              const pLength = path.length;
+              if (fullPath.slice(0, pLength) === path) {
+                const entry = line.slice(1 + index + pLength + 1);
+                for (let i = 0, {length} = events; i < length; i++) {
+                  const type = events[i];
+                  this.emit(type, {type, path, entry});
+                }
+              }
             }
           }
         }
