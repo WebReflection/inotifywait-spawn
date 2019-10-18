@@ -1,3 +1,5 @@
+const DELAY = 500;
+
 const {writeFile, unlink} = require('fs');
 const {spawnSync} = require('child_process');
 
@@ -142,42 +144,44 @@ Array.prototype.push = push;
 process.on('uncaughtException', function uncaughtException(err) {
   process.removeListener('uncaughtException', uncaughtException);
   writeFile('test.txt', '', () => {
-    inw = new INotifyWait('test.txt', {events: INotifyWait.IN_CLOSE_WRITE});
-    writeFile('test.txt', 'some data', Object);
-    inw.on(INotifyWait.IN_CLOSE_WRITE, info => {
-      assert(INotifyWait.IN_CLOSE_WRITE === info, 'expected IN_CLOSE_WRITE');
-      inw.stop();
-      unlink('test.txt', () => {
-        let created = false;
-        inw = new INotifyWait('.', {recursive: true, events: INotifyWait.IN_CREATE | INotifyWait.IN_MODIFY});
-        inw.on(INotifyWait.IN_CREATE, (info, details) => {
-          assert(INotifyWait.IN_CREATE === info, 'expected IN_CREATE');
-          assert(details === 'another file.txt', 'expected details IN_CREATE');
-          created = true;
-        });
-        inw.on(INotifyWait.IN_MODIFY, (info, details) => {
-          assert(INotifyWait.IN_MODIFY === info, 'expected folder IN_MODIFY');
-          assert(details === 'another file.txt', 'expected details IN_MODIFY');
-          assert(created, 'file was previously created');
-          unlink('another file.txt', () => {
-            inw.removeAllListeners();
-            inw.on(INotifyWait.IN_CREATE, (info, details) => {
-              assert(INotifyWait.IN_CREATE === info, 'expected recursive IN_CREATE');
-              assert(details === 'test/recursive.txt', 'expected recursive details IN_CREATE');
-              inw.stop();
-              console.log('');
-              unlink('test/recursive.txt', Object);
-            });
-            setTimeout(() => {
-              writeFile('test/recursive.txt', '', Object);
-            }, 500);
+    setTimeout(() => {
+      inw = new INotifyWait('test.txt', {events: INotifyWait.IN_CLOSE_WRITE});
+      inw.on(INotifyWait.IN_CLOSE_WRITE, info => {
+        assert(INotifyWait.IN_CLOSE_WRITE === info, 'expected IN_CLOSE_WRITE');
+        inw.stop();
+        unlink('test.txt', () => {
+          let created = false;
+          inw = new INotifyWait('.', {recursive: true, events: INotifyWait.IN_CREATE | INotifyWait.IN_MODIFY});
+          inw.on(INotifyWait.IN_CREATE, (info, details) => {
+            assert(INotifyWait.IN_CREATE === info, 'expected IN_CREATE');
+            assert(details === 'another file.txt', 'expected details IN_CREATE');
+            created = true;
           });
+          inw.on(INotifyWait.IN_MODIFY, (info, details) => {
+            assert(INotifyWait.IN_MODIFY === info, 'expected folder IN_MODIFY');
+            assert(details === 'another file.txt', 'expected details IN_MODIFY');
+            assert(created, 'file was previously created');
+            unlink('another file.txt', () => {
+              inw.removeAllListeners();
+              inw.on(INotifyWait.IN_CREATE, (info, details) => {
+                assert(INotifyWait.IN_CREATE === info, 'expected recursive IN_CREATE');
+                assert(details === 'test/recursive.txt', 'expected recursive details IN_CREATE');
+                inw.stop();
+                console.log('');
+                unlink('test/recursive.txt', Object);
+              });
+              setTimeout(() => {
+                writeFile('test/recursive.txt', '', Object);
+              }, DELAY);
+            });
+          });
+          setTimeout(() => {
+            writeFile('another file.txt', 'some data', Object);
+          }, DELAY);
         });
-        setTimeout(() => {
-          writeFile('another file.txt', 'some data', Object);
-        }, 500);
       });
-    });
+      writeFile('test.txt', 'some data', Object);
+    }, DELAY);
   });
 });
 
