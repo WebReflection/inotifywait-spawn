@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.com/WebReflection/inotifywait-spawn.svg?branch=master)](https://travis-ci.com/WebReflection/inotifywait-spawn) [![Coverage Status](https://coveralls.io/repos/github/WebReflection/inotifywait-spawn/badge.svg?branch=master)](https://coveralls.io/github/WebReflection/inotifywait-spawn?branch=master)
 
+<sup>**Social Media Photo by [Omid Kashmari](https://unsplash.com/@omidkashmari) on [Unsplash](https://unsplash.com/)**</sup>
+
 A zero dependencies, 100% code covered, [inotifywait](https://linux.die.net/man/1/inotifywait) wrap based on [inotify-tools](https://github.com/rvoicilas/inotify-tools/wiki) and [spawn](https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options).
 
 
