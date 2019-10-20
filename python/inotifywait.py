@@ -4,7 +4,7 @@ from inotify_simple import INotify, flags, parse_events
 
 class EventEmitter:
   def __init__(self):
-    self.removeAllListeners()
+    self.__events = dict()
 
   def emit(self, type, data):
     if type in self.__events:
