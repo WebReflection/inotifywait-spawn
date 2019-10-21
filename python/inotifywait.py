@@ -16,6 +16,10 @@ class EventEmitter:
       self.__events[type] = []
     self.__events[type].append(callback)
 
+  def once(self, type, callback):
+    cb = lambda data=None: self.removeListener(type, cb) or callback(data)
+    self.on(type, cb)
+
   def removeListener(self, type, callback):
     if type in self.__events:
       for cb in self.__events[type]:
@@ -79,3 +83,8 @@ class INotifyWait(EventEmitter):
         for flag in flags.from_mask(event.mask):
           for path in self.paths:
             self.emit(flag, {'type': flag, 'path': path, 'entry': event.name})
+
+# # Example
+# import time
+# inw = INotifyWait('test.txt', {'events': INotifyWait.IN_CLOSE_WRITE})
+# inw.once(INotifyWait.IN_CLOSE_WRITE, lambda data: print('written'))
