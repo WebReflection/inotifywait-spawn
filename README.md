@@ -37,6 +37,14 @@ For `RegExp` properties, use the `/*\.txt/i` flag to make it case insensitive.
 
 Please read [inotifywait man page](https://linux.die.net/man/1/inotifywait) to know more about the underlying features offered by `include` and `exclude`.
 
+### Python 3 Module
+
+In order to run this module in python too, please be sure you have installed the following _pip_ dependency.
+
+```sh
+sudo pip3 install inotify_simple
+```
+
 
 #### Why Yet Another `inotify` Project ?
 
