@@ -5,7 +5,7 @@
   "main": "cjs/index.js",
   "scripts": {
     "build": "npm run cjs && npm run test",
-    "cjs": "ascjs esm cjs && sed -i \"s/Object.defineProperty(exports, '__esModule', {value: true}).default/module.exports/\" cjs/index.js",
+    "cjs": "ascjs --no-default esm cjs",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "test": "istanbul cover test/index.js"
   },
@@ -17,8 +17,8 @@
   "author": "Andrea Giammarchi",
   "license": "ISC",
   "devDependencies": {
-    "ascjs": "^3.0.1",
-    "coveralls": "^3.0.7",
+    "ascjs": "^4.0.3",
+    "coveralls": "^3.1.0",
     "istanbul": "^0.4.5"
   },
   "module": "esm/index.js",
